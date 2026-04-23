@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:sqlserver://localhost:1433;databaseName=batchdb;encrypt=false
+    username: sa
+    password: YourStrong!Pass123
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: true
