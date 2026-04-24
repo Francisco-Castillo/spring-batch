@@ -11,22 +11,21 @@ import com.batch.demo.dto.PersonaExcelDTO;
 public class PersonaItemProcessor implements ItemProcessor<PersonaExcelDTO, Persona>{
 
 	@Override
-	public Persona process(PersonaExcelDTO dto) throws Exception {
-		 // Validaciones simples
-        if (dto.getEdad() == null || dto.getEdad() < 0) {
-            throw new IllegalArgumentException("Edad inválida");
-        }
+	public Persona process(PersonaExcelDTO item) throws Exception {
+		 if (item.getEmail() == null || item.getEmail().isBlank()) {
+		        throw new IllegalArgumentException("Email inválido");
+		    }
 
-        if (!dto.getEmail().contains("@")) {
-            throw new IllegalArgumentException("Email inválido");
-        }
+		    if (!item.getEmail().contains("@")) {
+		        throw new IllegalArgumentException("Email mal formado");
+		    }
 
-        Persona p = new Persona();
-        p.setNombre(dto.getNombre());
-        p.setEmail(dto.getEmail());
-        p.setEdad(dto.getEdad());
+		    Persona persona = new Persona();
+		    persona.setNombre(item.getNombre());
+		    persona.setEdad(item.getEdad());
+		    persona.setEmail(item.getEmail());
 
-        return p;
+		    return persona;
 	}
 
 }

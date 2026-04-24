@@ -2,37 +2,27 @@ package com.batch.demo.config;
 
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
-import org.springframework.batch.core.Step;
+import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.SkipListener;
-
+import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.job.builder.JobBuilder;
-import org.springframework.batch.core.step.builder.StepBuilder;
-
+import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import com.batch.demo.domain.Persona;
 import com.batch.demo.dto.PersonaExcelDTO;
 import com.batch.demo.processor.PersonaItemProcessor;
 import com.batch.demo.reader.ExcelItemReader;
 import com.batch.demo.writer.PersonaItemWriter;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Bean;
-
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.Step;
-import org.springframework.batch.core.SkipListener;
-
-import org.springframework.batch.core.job.builder.JobBuilder;
-import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.core.repository.JobRepository;
-
-import org.springframework.transaction.PlatformTransactionManager;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Aqui debemos gestionar el "Chunk" mas la tolerancia a fallos.
@@ -97,6 +87,18 @@ public class BatchConfig {
             public void onSkipInWrite(Persona item, Throwable t) {
                 log.error("Error al escribir registro: {} - error: {}", item, t.getMessage(), t);
             }
+        };
+    }
+    
+    @Bean
+    public CommandLineRunner jobRunner(JobLauncher jobLauncher, Job job) {
+        return args -> {
+            jobLauncher.run(
+                    job,
+                    new JobParametersBuilder()
+                            .addLong("time", System.currentTimeMillis())
+                            .toJobParameters()
+            );
         };
     }
 
